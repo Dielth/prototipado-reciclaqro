@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ReciclaQro - Mi progreso</title>
+<style>
+  :root{
+    --base:#0F172A; --surface:#0B1220; --card:#141C2E; --accent:#059669; --accent-dark:#047857;
+    --secondary:#F59E0B; --text:#E7ECF3; --text-soft:#96A3B8; --border:#233045; --danger:#EF4444;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:inherit;}
+  body{margin:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--base); color:var(--text); min-height:100%;}
+  
+  /* --- Top Nav Unificado --- */
+  header{ position:sticky; top:0; z-index:40; background:var(--surface); border-bottom:1px solid var(--border); }
+  .nav-inner{ max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:20px; padding:12px 20px; }
+  .logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; white-space:nowrap; color:#fff;}
+  .logo-mark{ width:32px; height:32px; border-radius:8px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; }
+  
+  nav.tabs{display:flex; gap:4px; overflow-x:auto;}
+  nav.tabs button{ border:none; background:transparent; color:var(--text-soft); font:inherit; font-weight:600; font-size:.92rem; padding:10px 14px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:0.15s; }
+  nav.tabs button:hover{background:var(--card); color:#fff;}
+  nav.tabs button.active{background:var(--accent); color:#fff;}
+
+  /* --- Perfil Dropdown --- */
+  .user-profile-nav { margin-left:auto; display:flex; align-items:center; gap:10px; position:relative; }
+  .user-name-nav { font-weight:600; font-size:.9rem; display:none; color:#fff;}
+  @media(min-width: 600px) { .user-name-nav { display:block; } }
+  .avatar-nav { 
+    width:36px; height:36px; border-radius:50%; background:var(--card); border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--accent);
+    cursor:pointer; user-select:none; font-size:1rem; transition:transform 0.2s;
+  }
+  .avatar-nav:hover { transform:scale(1.05); }
+  
+  .dropdown-menu { 
+    position:absolute; top:120%; right:0; background:var(--card); border:1px solid var(--border);
+    border-radius:12px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; flex-direction:column; overflow:hidden; z-index:50;
+  }
+  .dropdown-menu.show { display:flex; animation:fadeDrop 0.2s ease; }
+  @keyframes fadeDrop { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:none;} }
+  .dropdown-item { padding:14px 16px; font-size:.85rem; font-weight:600; cursor:pointer; color:var(--text); border-bottom:1px solid var(--border); transition:0.15s; }
+  .dropdown-item:last-child { border-bottom:none; }
+  .dropdown-item:hover { background:var(--base); color:var(--accent); }
+  .dropdown-item.danger:hover { color:var(--danger); }
+
+  /* --- Dashboard --- */
+  .wrap{max-width:640px; margin:0 auto; padding:30px 20px 60px;}
+  h1{font-size:1.4rem; margin:0 0 18px;}
+
+  .progress-shell{background:#111C30; border:1px solid #233045; border-radius:16px; padding:22px;}
+  .profile-head{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .avatar-main{
+    width:64px; height:64px; border-radius:50%; background:#1E293B; border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.6rem; color:var(--accent);
+  }
+  .profile-head .name{font-weight:700; font-size:1.1rem; color:#fff;}
+  .profile-head .rank{color:var(--accent); font-size:.85rem; font-weight:600;}
+  .xp-bar-track{background:#1E293B; border-radius:999px; height:10px; margin-top:14px; overflow:hidden;}
+  .xp-bar-fill{background:var(--accent); height:100%; width:85%;}
+  .xp-label{font-size:.8rem; color:#94A3B8; margin-top:6px;}
+
+  .impact-row{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:22px 0;}
+  .ring{background:#141F35; border-radius:14px; padding:16px; text-align:center; border:1px solid #233045;}
+  .ring b{display:block; font-size:1.3rem; color:var(--accent);}
+  .ring span{font-size:.78rem; color:#94A3B8;}
+
+  .history-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1E293B; font-size:.9rem;}
+  .history-row:last-child{border-bottom:none;}
+  .xp-gain{color:var(--accent); font-weight:700; font-size:.85rem;}
+  .report-btn{margin-top:16px; background:var(--secondary); color:#1E293B; border:none; padding:11px 18px; border-radius:10px; font-weight:700; cursor:pointer; width:100%;}
+
+  .rewards-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:16px;}
+  .reward{background:#141F35; border:1px solid #233045; border-radius:12px; padding:14px; font-size:.85rem;}
+  .reward.unlocked{border-color:var(--accent);}
+  .reward .lvl{color:#64748B; font-size:.75rem;}
+
+  /* --- Modal Avatar --- */
+  .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:100; display:none; align-items:center; justify-content:center; }
+  .modal-content { background:var(--card); padding:24px; border-radius:16px; border:1px solid var(--border); width:90%; max-width:320px; text-align:center; }
+  .avatar-options { display:flex; justify-content:center; gap:16px; margin:20px 0; }
+  .avatar-option { width:54px; height:54px; border-radius:50%; background:var(--surface); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.6rem; cursor:pointer; transition:0.2s; color:var(--accent); font-weight:bold; }
+  .avatar-option:hover { border-color:var(--accent); transform:scale(1.1); }
+  .modal-close { background:transparent; border:1px solid var(--border); color:var(--text); padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; width:100%;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-mark">RQ</span> ReciclaQro</div>
+    <nav class="tabs">
+      <button onclick="window.location.href='./recicla-Qro_2.html?view=mapa'">Mapa</button>
+      <button onclick="window.location.href='./recicla-Qro_2.html?view=hub'">Aprende</button>
+      <button class="active">Mi progreso</button>
+    </nav>
+    
+    <div class="user-profile-nav" id="userProfileNav">
+      <span class="user-name-nav">Carlos Recicla</span>
+      <div class="avatar-nav" id="headerAvatar" onclick="toggleDropdown()">CR</div>
+      
+      <div class="dropdown-menu" id="profileDropdown">
+        <div class="dropdown-item" onclick="openAvatarModal()">🎨 Cambiar avatar</div>
+        <div class="dropdown-item danger" onclick="logout()">🚪 Cerrar sesión</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>Mi progreso</h1>
+
+  <div class="progress-shell">
+    <div class="profile-head">
+      <div class="avatar-main" id="dashboardAvatar">CR</div>
+      <div>
+        <div class="name">Carlos Recicla</div>
+        <div class="rank">🏆 Nivel 4 · Guardián del Suelo</div>
+      </div>
+    </div>
+    <div class="xp-bar-track"><div class="xp-bar-fill"></div></div>
+    <div class="xp-label">850 / 1000 XP para el siguiente nivel</div>
+
+    <div class="impact-row">
+      <div class="ring"><b>12 kg</b><span>CO₂ evitado</span></div>
+      <div class="ring"><b>5</b><span>Dispositivos entregados</span></div>
+      <div class="ring"><b>3</b><span>Meses activo</span></div>
+    </div>
+
+    <div>
+      <div class="history-row"><span>2 laptops viejas</span><span class="xp-gain">+300 XP</span></div>
+      <div class="history-row"><span>1 microondas</span><span class="xp-gain">+150 XP</span></div>
+      <div class="history-row"><span>5 kg de cartón reciclado</span><span class="xp-gain">+75 XP</span></div>
+    </div>
+    <button class="report-btn">+ Reportar un reciclaje</button>
+
+    <div class="rewards-row">
+      <div class="reward unlocked">🌱 Planta nativa gratis<div class="lvl">Disponible ahora</div></div>
+      <div class="reward">🔒 Descuento refrendo<div class="lvl">Nivel 5</div></div>
+      <div class="reward">🔒 Certificado de impacto<div class="lvl">Nivel 10</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Avatares -->
+<div id="avatarModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Selecciona tu avatar</h3>
+    <p style="font-size:0.85rem; color:var(--text-soft); margin-top:0;">Elige una imagen temática o tu foto por defecto.</p>
+    <div class="avatar-options">
+      <div class="avatar-option" onclick="changeAvatar('default')" title="Por defecto">CR</div>
+      <div class="avatar-option" onclick="changeAvatar('planta')" title="Planta">🌱</div>
+      <div class="avatar-option" onclick="changeAvatar('planeta')" title="Planeta">🌎</div>
+      <div class="avatar-option" onclick="changeAvatar('reciclaje')" title="Reciclaje">♻️</div>
+    </div>
+    <button class="modal-close" onclick="closeAvatarModal()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+  // Protección de ruta adaptada para archivos locales
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const isAuth = params.get('auth') === '1';
+    const isLoggedIn = localStorage.getItem('rq_logged_in') === 'true';
+
+    if(!isLoggedIn && !isAuth) {
+      window.location.href = './recicla-Qro_2.html';
+    } else {
+      if (isAuth) {
+        localStorage.setItem('rq_logged_in', 'true');
+      }
+      updateAvatarDisplay();
+    }
+  });
+
+  function toggleDropdown() {
+    document.getElementById('profileDropdown').classList.toggle('show');
+  }
+
+  window.onclick = function(event) {
+    if (!event.target.matches('.avatar-nav')) {
+      const dropdowns = document.getElementsByClassName("dropdown-menu");
+      for (let i = 0; i < dropdowns.length; i++) {
+        let openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) openDropdown.classList.remove('show');
+      }
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('rq_logged_in');
+    window.location.href = './recicla-Qro_2.html';
+  }
+
+  function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+  function closeAvatarModal() { document.getElementById('avatarModal').style.display = 'none'; }
+
+  function changeAvatar(type) {
+    localStorage.setItem('rq_avatar', type);
+    updateAvatarDisplay();
+    closeAvatarModal();
+  }
+
+  function updateAvatarDisplay() {
+    const type = localStorage.getItem('rq_avatar') || 'default';
+    let html = 'CR';
+    if(type === 'planta') html = '🌱';
+    else if(type === 'planeta') html = '🌎';
+    else if(type === 'reciclaje') html = '♻️';
+    
+    document.getElementById('headerAvatar').innerHTML = html;
+    document.getElementById('dashboardAvatar').innerHTML = html;
+  }
+</script>
+</body>
+</html>

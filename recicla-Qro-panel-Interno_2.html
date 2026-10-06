@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ReciclaQro - Panel interno</title>
+<style>
+  :root{
+    --base:#0F172A; --surface:#0B1220; --card:#141C2E; --accent:#059669; --accent-dark:#047857;
+    --secondary:#F59E0B; --text:#E7ECF3; --text-soft:#96A3B8; --border:#233045; --danger:#EF4444;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:inherit;}
+  body{margin:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--base); color:var(--text); min-height:100%;}
+
+  header{ position:sticky; top:0; z-index:40; background:var(--surface); border-bottom:1px solid var(--border); }
+  .nav-inner{ max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:14px 20px; }
+  .back{
+    display:inline-flex; align-items:center; gap:8px; color:var(--text-soft); text-decoration:none;
+    font-size:.85rem; font-weight:600; padding:8px 14px; background:var(--card); border:1px solid var(--border);
+    border-radius:10px; transition:all .2s ease;
+  }
+  .back:hover{ color:var(--text); background:#1E293B; border-color:var(--accent); transform:translateX(-3px); }
+  header h1{font-size:1.05rem; margin:0;}
+  .internal-badge{
+    margin-left:auto; background:#2A2108; color:#F2C94C; border:1px solid #4A3B0A; border-radius:999px;
+    padding:6px 12px; font-size:.75rem; font-weight:700;
+  }
+
+  .shell{max-width:1180px; margin:0 auto; padding:24px 20px 60px; display:grid; grid-template-columns:220px 1fr; gap:24px;}
+  @media (max-width:760px){ .shell{grid-template-columns:1fr;} }
+
+  .sidebar{display:flex; flex-direction:column; gap:6px;}
+  .side-btn{
+    display:flex; align-items:center; gap:10px; text-align:left; border:1px solid transparent; background:transparent;
+    color:var(--text-soft); font:inherit; font-weight:600; font-size:.9rem; padding:11px 14px; border-radius:10px; cursor:pointer;
+  }
+  .side-btn:hover{background:var(--card); color:var(--text);}
+  .side-btn.active{background:var(--card); border-color:var(--accent); color:#fff;}
+  .side-btn .badge-wip{
+    margin-left:auto; font-size:.62rem; font-weight:700; color:#F2C94C; background:#2A2108;
+    border:1px solid #4A3B0A; padding:2px 7px; border-radius:999px;
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .panel h2{font-size:1.2rem; margin:0 0 4px;}
+  .panel .subtitle{color:var(--text-soft); font-size:.88rem; margin:0 0 20px;}
+
+  .stats-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:20px;}
+  .stat-card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px;}
+  .stat-card b{display:block; font-size:1.4rem; color:var(--accent);}
+  .stat-card span{font-size:.8rem; color:var(--text-soft);}
+
+  .add-btn{
+    background:var(--accent); color:#fff; border:none; padding:10px 16px; border-radius:9px;
+    font-weight:700; cursor:pointer; margin-bottom:14px; transition:all .15s ease;
+  }
+  .add-btn:hover{background:var(--accent-dark); transform:translateY(-1px);}
+
+  table{width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; border:1px solid var(--border);}
+  th,td{text-align:left; padding:12px 14px; border-bottom:1px solid var(--border); font-size:.86rem;}
+  th{background:#111C30; color:var(--text-soft); font-weight:600;}
+  tr:last-child td{border-bottom:none;}
+  .row-actions button{border:none; background:transparent; cursor:pointer; font-size:.85rem; font-weight:600; margin-right:8px; transition:opacity .15s;}
+  .row-actions button:hover{opacity:.8;}
+  .edit-a{color:var(--accent);} .del-a{color:var(--danger);}
+
+  .level-pill{font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .level-pill.basico{background:#062e21; border:1px solid #0d4f3a; color:#6ee7b7;}
+  .level-pill.avanzado{background:#0b1f3d; border:1px solid #1e3a6d; color:#93c5fd;}
+  .status-pill{font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:999px; background:#062e21; border:1px solid #0d4f3a; color:#6ee7b7;}
+
+  .wip-card{
+    background:var(--card); border:1px dashed var(--border); border-radius:16px; padding:40px 24px;
+    text-align:center; color:var(--text-soft);
+  }
+  .wip-card .wip-icon{font-size:2rem; margin-bottom:10px;}
+  .wip-card h3{color:var(--text); margin:0 0 8px;}
+  .wip-card p{max-width:420px; margin:0 auto; font-size:.88rem; line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <!-- Redirección corregida al archivo con sufijo _2 -->
+    <a class="back" href="./recicla-Qro_2.html">← ReciclaQro (sitio publico)</a>
+    <h1>Panel de gestión de contenido</h1>
+    <span class="internal-badge">Acceso restringido</span>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidebar">
+    <button class="side-btn active" onclick="showPanel('educativo', this)">📚 Contenido educativo</button>
+    <button class="side-btn" onclick="showPanel('centros', this)">📍 Centros de acopio <span class="badge-wip">WIP</span></button>
+    <button class="side-btn" onclick="showPanel('gamificacion', this)">🎮 Gamificación y usuarios <span class="badge-wip">WIP</span></button>
+  </nav>
+
+  <main>
+    <!-- CONTENIDO EDUCATIVO: funcional -->
+    <section id="educativo" class="panel active">
+      <h2>Contenido educativo</h2>
+      <p class="subtitle">Artículos, infografías y quizzes que se muestran en el Hub público.</p>
+
+      <div class="stats-row">
+        <div class="stat-card"><b>5</b><span>Contenidos totales</span></div>
+        <div class="stat-card"><b>5</b><span>Publicados</span></div>
+        <div class="stat-card"><b>3 / 2</b><span>Básico / Avanzado</span></div>
+      </div>
+
+      <button class="add-btn">+ Agregar contenido</button>
+      <table>
+        <thead>
+          <tr><th>Título</th><th>Tipo</th><th>Nivel</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>¿Por qué tirar un celular a la basura es peligroso?</td>
+            <td>Artículo</td>
+            <td><span class="level-pill basico">Básico</span></td>
+            <td><span class="status-pill">Publicado</span></td>
+            <td class="row-actions"><button class="edit-a">Editar</button><button class="del-a">Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>Qué acepta cada tipo de centro de acopio</td>
+            <td>Infografía</td>
+            <td><span class="level-pill basico">Básico</span></td>
+            <td><span class="status-pill">Publicado</span></td>
+            <td class="row-actions"><button class="edit-a">Editar</button><button class="del-a">Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>De la chatarra a la economía circular</td>
+            <td>Artículo</td>
+            <td><span class="level-pill avanzado">Avanzado</span></td>
+            <td><span class="status-pill">Publicado</span></td>
+            <td class="row-actions"><button class="edit-a">Editar</button><button class="del-a">Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>RAEE en el aula: actividades para escuelas</td>
+            <td>Guía docente</td>
+            <td><span class="level-pill avanzado">Avanzado</span></td>
+            <td><span class="status-pill">Publicado</span></td>
+            <td class="row-actions"><button class="edit-a">Editar</button><button class="del-a">Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>Identifica el residuo correcto</td>
+            <td>Quiz</td>
+            <td><span class="level-pill basico">Básico</span></td>
+            <td><span class="status-pill">Publicado</span></td>
+            <td class="row-actions"><button class="edit-a">Editar</button><button class="del-a">Eliminar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CENTROS DE ACOPIO: en construcción -->
+    <section id="centros" class="panel">
+      <h2>Centros de acopio</h2>
+      <p class="subtitle">Gestión de los puntos que aparecen en el mapa público.</p>
+      <div class="wip-card">
+        <div class="wip-icon">🚧</div>
+        <h3>En construcción</h3>
+        <p>Pendiente de definir con el equipo cómo se integrará este módulo con el modelo geoespacial en Supabase (PostgreSQL + PostGIS) antes de construir el CRUD final.</p>
+      </div>
+    </section>
+
+    <!-- GAMIFICACIÓN Y USUARIOS: en construcción -->
+    <section id="gamificacion" class="panel">
+      <h2>Gamificación y usuarios</h2>
+      <p class="subtitle">Administración de eco-usuarios, XP y recompensas.</p>
+      <div class="wip-card">
+        <div class="wip-icon">🚧</div>
+        <h3>En construcción</h3>
+        <p>Pendiente de acordar con el equipo el alcance de este módulo (gestión de usuarios y actualización en tiempo real del cálculo de XP) antes de construir su panel de administración.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  function showPanel(id, btn){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
